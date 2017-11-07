@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+</head>
+<body style="padding-top:20px">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="well">
+            <!--captura de login-->
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="success">
+                        <th colspan="2">
+                            Login de usuario Existente
+                            <a href="EnviarEmail.aspx" class="btn btn-success pull-right">
+                                Registrar
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Email</td>
+                        <td>
+                            <input type="text" id="txtEmail" placeholder="email" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>
+                            <input type="password" id="txtPassword"
+                                   placeholder="password" />
+                        </td>
+                    </tr>
+                    <tr class="success">
+                        <td colspan="2">
+                            <input id="btnLogin" class="btn btn-success" type="button"
+                                   value="Login" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Bootstrap alert para mensaje de fallo-->
+            <div id="divError" class="alert alert-danger collapse">
+                <a id="linkClose" href="#" class="close">&times;</a>
+                <div id="divErrorText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $('#btnLogin').click(function () {
+                $.ajax({
+                    
+                    url: 'https://thawing-forest-71712.herokuapp.com/api/iniciar',
+                    method: 'POST',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: "json",
+                    data: {
+                        email: $('#txtEmail').val(),
+                        password: $('#txtPassword').val()
+
+                    },
+                    // si se completa exitosamente guarda el token en el navegador y redireciona
+                    // a Data.html
+                    success: function (response) {
+                        //response = $.parseJSON(response);
+                        //console.log("cuentaid" + response.method.getCuenta_id);
+
+                        console.log(response.cuenta_id);
+                        Cookies.set('cuenta_id', response.cuenta_id);
+                        console.log(Cookies.get('cuenta_id'));
+                        sessionStorage.setItem("accessToken", response.access_token);
+                        
+                      
+                        window.location.href = "Data.html";
+                        console.log(response.access_token);
+                    },
+                    // para error de display 
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                        console.log(jqXHR);
+                        console.log($('#txtEmail').val());
+                        console.log($('#txtPassword').val());
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

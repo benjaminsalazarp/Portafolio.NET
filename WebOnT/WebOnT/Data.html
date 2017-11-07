@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+</head>
+<body style="padding-top:20px">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="well">
+            <input id="btnListarCuentas" class="btn btn-success"
+                   type="button" value="Listar Cuentas" />
+            <input id="btnListarActividades" class="btn btn-success"
+                   type="button" value="Listar Actividades" />
+            <input id="btnLogoff" class="btn btn-success pull-right"
+                   type="button" value="Cerrar Sesion" />
+        </div>
+        <div id="divData" class="well hidden">
+            <table class="table table-bordered" id="tblData">
+                    <tr class="success">
+                        <th>ID</th>
+                        <th>Rut</th>
+                        <th>Email</th>
+                        <th>Nombre</th>
+                        <th>Apellido Paterno</th>
+                        <th>Apellido Materno</th>
+                        <th>Telefono</th>
+                        <th>Celular</th>
+                        <th>Sexo</th>
+                    </tr>     
+                    <tr>
+                        <td id="cuenta_id"></td>
+                        <td id="rut"></td>
+                        <td id="email"></td>
+                        <td id="nombre"></td>
+                        <td id="apellido_p"></td>
+                        <td id="apellido_m"></td>
+                        <td id="telefono"></td>
+                        <td id="celular"></td>
+                        <td id="sexo"></td>
+                    </tr>
+            </table>
+        </div>
+        <div class="modal fade" tabindex="-1" id="errorModal"
+             data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4 class="modal-title">Sesion Expirada</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <h2 class="modal-title">Cierra este mensaje para Iiniciar sesion denuevo</h2>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger"
+                                data-dismiss="modal">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divError" class="alert alert-danger collapse">
+            <a id="linkClose" href="#" class="close">&times;</a>
+            <div id="divErrorText"></div>
+        </div>
+    </div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            if (sessionStorage.getItem('accessToken') == null) {
+                window.location.href = "Login.html";
+            }
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $('#errorModal').on('hidden.bs.modal', function () {
+                window.location.href = "Login.html";
+            });
+            $('#btnListarActividades').click(function () {
+                window.location.href = "Actividades.html";
+            });
+
+            $('#btnLogoff').click(function () {
+                Cookies.remove('cuenta_id');
+                sessionStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+
+            });
+
+            $('#btnListarCuentas').click(function () {
+                $.ajax({
+                    url: 'https://thawing-forest-71712.herokuapp.com/api/cuentas/' + Cookies.get("cuenta_id"),
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken")
+                    },
+                    success: function (data) {
+                        $('#divData').removeClass('hidden');
+                        $('#tblBody').empty();
+                        console.log(data);
+                        $('#cuenta_id').html(data.cuenta_id);
+                        $('#rut').html(data.rut);
+                        $('#email').html(data.email);
+                        $('#nombre').html(data.nombre);
+                        $('#apellido_p').html(data.apellido_p);
+                        $('#apellido_m').html(data.apellido_m);
+                        $('#telefono').html(data.telefono);
+                        $('#celular').html(data.celular);
+                        $('#sexo').html(data.sexo);
+                    },
+                    error: function (jQXHR) {
+                        // si el codigo es 401, acceso expiro y redireciona al login
+                        if (jQXHR.status == "401") {
+                            $('#errorModal').modal('show');
+                        }
+                        else {
+                            $('#divErrorText').text(jqXHR.responseText);
+                            $('#divError').show('fade');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

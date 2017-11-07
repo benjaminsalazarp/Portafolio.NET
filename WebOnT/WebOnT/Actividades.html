@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body style="padding-top:20px">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="well">
+            <input id="btnListarActividad" class="btn btn-success"
+                   type="button" value="Listar Actividades" />
+            <input id="btnAgregarActividad" class="btn btn-success"
+                   type="button" value="Agregar Actividades" />
+        </div>
+        <div id="divData" class="well hidden">
+            <table class="table table-bordered" id="tblActividad">
+                <thead>
+                    <tr class="success">
+                        <td>actividad_id</td>
+                        <td>
+                            <input type="text" id="txtActividad_id" placeholder="actividad" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>nombre</td>
+                        <td>
+                            <input type="text" id="txtNombreActividad"
+                                   placeholder="nombre" />
+                        </td>
+                    </tr>
+
+                </thead>
+                <tbody id="tblBody"></tbody>
+            </table>
+        </div>
+        <div class="modal fade" tabindex="-1" id="errorModal"
+             data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4 class="modal-title">Sesion Expirada</h4>
+                    </div>
+                    <div class="modal-body">
+                   
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger"
+                                data-dismiss="modal">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divError" class="alert alert-danger collapse">
+            <a id="linkClose" href="#" class="close">&times;</a>
+            <div id="divErrorText"></div>
+        </div>
+    </div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            if (sessionStorage.getItem('accessToken') == null) {
+                window.location.href = "Login.html";
+            }
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $('#errorModal').on('hidden.bs.modal', function () {
+                window.location.href = "Login.html";
+            });
+            $('#btnAgregarActividad').click(function () {
+                $.ajax({
+                    // Post nombre
+                    url: 'https://thawing-forest-71712.herokuapp.com/api/actividades',
+                    method: 'POST',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: "json",
+                    data: {
+                        nombre: $('#txtNombreActividad').val()
+                        
+
+                    },
+                 
+                    // para error de display 
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                        console.log(jqXHR);
+                        console.log($('#nombre').val());
+                        
+                    }
+                });
+            });
+
+            $('#btnListarActividad').click(function () {
+                $.ajax({
+                    url: 'https://thawing-forest-71712.herokuapp.com/api/actividades',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken")
+                    },
+                    success: function (data) {
+                        $('#divData').removeClass('hidden');
+                        $('#tblBody').empty();
+                        $.each(data, function (index, value) {
+                            var row = $('<tr><td>' + value.actividad_id + '</td><td>'
+                                + value.nombre + '</td><tr>');
+                            $('#tblActividad').append(row);
+                        });
+                    },
+                    error: function (jQXHR) {
+                        // si el codigo es 401, acceso expiro y redireciona al login
+                        if (jQXHR.status == "401") {
+                            $('#errorModal').modal('show');
+                        }
+                        else {
+                            $('#divErrorText').text(jqXHR.responseText);
+                            $('#divError').show('fade');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
