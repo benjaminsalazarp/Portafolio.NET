@@ -75,21 +75,37 @@
                     // si se completa exitosamente guarda el token en el navegador y redireciona
                     // a Data.html
                     success: function (response) {
-                        //response = $.parseJSON(response);
-                        //console.log("cuentaid" + response.method.getCuenta_id);
+                       
 
                         console.log(response.cuenta_id);
                         Cookies.set('cuenta_id', response.cuenta_id);
+                        var cuentaPaso = response.cuenta_id;
+                        $.ajax({
+                            url: 'https://thawing-forest-71712.herokuapp.com/api/cuentas/'+cuentaPaso+'/alumnos',
+                            method: 'GET',
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+
+                            success: function (response2) {
+                                Cookies.set('alumnos', response2);
+                                console.log(response2);
+                                window.location.href = "Data.html";
+                            }
+                        });
+
+                    
                         console.log(Cookies.get('cuenta_id'));
                         sessionStorage.setItem("accessToken", response.access_token);
                         
                       
-                        window.location.href = "Data.html";
+                        
                         console.log(response.access_token);
                     },
                     // para error de display 
                     error: function (jqXHR) {
-                        $('#divErrorText').text(jqXHR.responseText);
+                        alertify
+                            .alert("OOPS HA OCURRIDO UN ERROR ", function () {
+                                alertify.message('OK');
+                            });
                         $('#divError').show('fade');
                         console.log(jqXHR);
                         console.log($('#txtEmail').val());

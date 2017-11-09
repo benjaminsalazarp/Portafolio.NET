@@ -5,6 +5,11 @@
     <meta charset="utf-8" />
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <!-- JavaScript -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
 </head>
 <body style="padding-top:20px">
     <div class="col-md-10 col-md-offset-1">
@@ -101,6 +106,7 @@
 
             $('#btnLogoff').click(function () {
                 Cookies.remove('cuenta_id');
+                Cookies.remove('alumnos');
                 sessionStorage.removeItem('accessToken');
                 window.location.href = "Login.html";
 
@@ -134,7 +140,10 @@
                             $('#errorModal').modal('show');
                         }
                         else {
-                            $('#divErrorText').text(jqXHR.responseText);
+                            alertify
+                                .alert("OOPS HA OCURRIDO UN ERROR ", function () {
+                                    alertify.message('OK');
+                                });
                             $('#divError').show('fade');
                         }
                     }

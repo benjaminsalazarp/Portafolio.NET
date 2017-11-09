@@ -4,6 +4,11 @@
     <title></title>
     <meta charset="utf-8" />
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <!-- JavaScript -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
 </head>
 <body style="padding-top:20px">
     <div class="col-md-10 col-md-offset-1">
@@ -12,6 +17,8 @@
                    type="button" value="Listar Actividades" />
             <input id="btnAgregarActividad" class="btn btn-success"
                    type="button" value="Agregar Actividades" />
+            <input id="btnLogoff" class="btn btn-success pull-right"
+                   type="button" value="Cerrar Sesion" />
         </div>
         <div id="divData" class="well hidden">
             <table class="table table-bordered" id="tblActividad">
@@ -78,6 +85,13 @@
 
             $('#errorModal').on('hidden.bs.modal', function () {
                 window.location.href = "Login.html";
+            });
+            $('#btnLogoff').click(function () {
+                Cookies.remove('cuenta_id');
+                Cookies.remove('alumnos');
+                sessionStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+
             });
             $('#btnAgregarActividad').click(function () {
                 $.ajax({

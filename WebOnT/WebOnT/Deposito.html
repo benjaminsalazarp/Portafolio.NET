@@ -5,40 +5,44 @@
     <meta charset="utf-8" />
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <!-- JavaScript -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
 </head>
 <body style="padding-top:20px">
     <div class="col-md-10 col-md-offset-1">
         <div class="well">
-            <!--captura de login-->
+            <input id="btnLogoff" class="btn btn-success pull-right"
+                   type="button" value="Cerrar Sesion" />
             <table class="table table-bordered">
                 <thead>
                     <tr class="success">
                         <th colspan="2">
-                            Login de usuario Existente
-                            <a href="EnviarEmail.aspx" class="btn btn-success pull-right">
-                                Registrar
-                            </a>
+                            Depositar
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Email</td>
+                        <td>Monto</td>
                         <td>
-                            <input type="text" id="txtEmail" placeholder="email" />
+                            <input type="text" id="txtMonto" placeholder="monto" />
                         </td>
                     </tr>
                     <tr>
-                        <td>Password</td>
+                        <td>Alumno</td>
                         <td>
-                            <input type="password" id="txtPassword"
-                                   placeholder="password" />
+                            <select id="alumno_id"  autofocus>
+                            
+                            </select>
+                            
                         </td>
                     </tr>
                     <tr class="success">
                         <td colspan="2">
-                            <input id="btnLogin" class="btn btn-success" type="button"
-                                   value="Login" />
+                            <input id="btnDepositar" class="btn btn-success" type="button"
+                                   value="Depositar" />
                         </td>
                     </tr>
                 </tbody>
@@ -50,46 +54,64 @@
             </div>
         </div>
     </div>
-
+  
     <script src="Scripts/jquery-1.10.2.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
-
+            
+            var alumnos = JSON.parse(Cookies.get("alumnos"));
+            for (var i in alumnos) {
+                $('#alumno_id').append('<option value=' + alumnos[i].alumno_id+'>' + alumnos[i].nombre + '</option>');
+           }
             $('#linkClose').click(function () {
                 $('#divError').hide('fade');
             });
 
-            $('#btnLogin').click(function () {
+            $('#btnLogoff').click(function () {
+                Cookies.remove('cuenta_id');
+                Cookies.remove('alumnos');
+                sessionStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+
+            });
+            $('#btnDepositar').click(function () {
+                console.log(Cookies.get("alumno_id"));
+               var alumno_id = $('#alumno_id').val();
                 $.ajax({
                     
-                    url: 'https://thawing-forest-71712.herokuapp.com/api/iniciar',
+                    url: 'https://thawing-forest-71712.herokuapp.com/api/alumnos/' + alumno_id+'/depositos',
                     method: 'POST',
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     dataType: "json",
                     data: {
-                        email: $('#txtEmail').val(),
-                        password: $('#txtPassword').val()
-
+                        cuenta_id: Cookies.get("cuenta_id"),
+                        monto: $('#txtMonto').val(),
+                        ruta_comprobante: "ruta1"
                     },
-                    // si se completa exitosamente guarda el token en el navegador y redireciona
-                    // a Data.html
+                   
                     success: function (response) {
-                        //response = $.parseJSON(response);
-                        //console.log("cuentaid" + response.method.getCuenta_id);
+                        if (response) {
+                            alertify
+                                .alert("Deposito Realizado", function () {
+                                    alertify.message('OK');
+                                });
+                        } else {
+                            alertify
+                                .alert("Error de deposito", function () {
+                                    alertify.message('OK');
+                                });
+                        }
+                        window.location.href = "Deposito.html";
 
-                        console.log(response.cuenta_id);
-                        Cookies.set('cuenta_id', response.cuenta_id);
-                        console.log(Cookies.get('cuenta_id'));
-                        sessionStorage.setItem("accessToken", response.access_token);
                         
-                      
-                        window.location.href = "Data.html";
-                        console.log(response.access_token);
                     },
                     // para error de display 
                     error: function (jqXHR) {
-                        $('#divErrorText').text(jqXHR.responseText);
+                        alertify
+                            .alert("OOPS HA OCURRIDO UN ERROR ", function () {
+                                alertify.message('OK');
+                            });
                         $('#divError').show('fade');
                         console.log(jqXHR);
                         console.log($('#txtEmail').val());
