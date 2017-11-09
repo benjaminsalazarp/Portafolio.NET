@@ -13,8 +13,11 @@
                    type="button" value="Listar Cuentas" />
             <input id="btnListarActividades" class="btn btn-success"
                    type="button" value="Listar Actividades" />
+            <input id="btnRealizarDeposito" class="btn btn-success"
+                   type="button" value="Realizar Deposito" />
             <input id="btnLogoff" class="btn btn-success pull-right"
                    type="button" value="Cerrar Sesion" />
+
         </div>
         <div id="divData" class="well hidden">
             <table class="table table-bordered" id="tblData">
@@ -91,6 +94,9 @@
             });
             $('#btnListarActividades').click(function () {
                 window.location.href = "Actividades.html";
+            });
+            $('#btnRealizarDeposito').click(function () {
+                window.location.href = "Deposito.html";
             });
 
             $('#btnLogoff').click(function () {

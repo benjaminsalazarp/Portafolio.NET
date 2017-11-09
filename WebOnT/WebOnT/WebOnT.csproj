@@ -122,6 +122,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Data.html" />
+    <Content Include="Deposito.html" />
     <Content Include="EnviarEmail.aspx" />
     <Content Include="EnvioEmail.aspx" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -130,7 +131,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="HomeUsuario.html" />
     <Content Include="Login.html" />
     <Content Include="Register.html" />
     <Content Include="Scripts\bootstrap.js" />
